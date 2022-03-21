@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Baraja\TracySentryBridge;
 
 
-use Sentry\Severity;
-use Tracy\Debugger;
-use Tracy\ILogger;
-
 use function Sentry\captureException;
 use function Sentry\captureMessage;
+use Sentry\Severity;
+
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 final class SentryLogger implements ILogger
 {
@@ -54,6 +54,7 @@ final class SentryLogger implements ILogger
 			captureMessage($value, $severity);
 		}
 	}
+
 
 	private function getSeverityFromLevel(string $level): Severity
 	{
