@@ -47,7 +47,13 @@ final class SentryLogger implements ILogger
 	{
 		$severity = $this->getSeverityFromLevel($level);
 
-		if ($value instanceof \Throwable) {
+		if (function_exists('Sentry\captureException') === false) {
+			echo 'Sentry already has not loaded.';
+			if ($value instanceof \Throwable) {
+				echo "\n\n" . $value->getMessage() . "\n";
+				echo $value->getTraceAsString();
+			}
+		} elseif ($value instanceof \Throwable) {
 			captureException($value);
 		} else {
 			captureMessage($value, $severity);
