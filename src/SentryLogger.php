@@ -29,15 +29,14 @@ final class SentryLogger implements ILogger
 	}
 
 
-	/**
-	 * @param mixed $value
-	 * @param string $level
-	 */
-	public function log($value, $level = self::INFO): void
+	public function log(mixed $value, mixed $level = self::INFO): void
 	{
 		$this->fallback->log($value, $level);
+		if (is_string($level) === false) {
+			return;
+		}
 		try {
-			$this->logToSentry($value, (string) $level);
+			$this->logToSentry($value, $level);
 		} catch (\Throwable $e) {
 			$this->fallback->log($e, ILogger::CRITICAL);
 		}
@@ -48,7 +47,13 @@ final class SentryLogger implements ILogger
 	{
 		$severity = $this->getSeverityFromLevel($level);
 
-		if ($value instanceof \Throwable) {
+		if (function_exists('Sentry\captureException') === false) {
+			echo 'Sentry already has not loaded.';
+			if ($value instanceof \Throwable) {
+				echo "\n\n" . $value->getMessage() . "\n";
+				echo $value->getTraceAsString();
+			}
+		} elseif ($value instanceof \Throwable) {
 			captureException($value);
 		} else {
 			captureMessage($value, $severity);
